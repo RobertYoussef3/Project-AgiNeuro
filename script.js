@@ -36,25 +36,47 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.key === "Escape") closeNav();
   });
 
-  const contactForm = document.querySelector("#contact form");
-  const note = document.getElementById("form-note");
+const contactForm = document.querySelector("#contact form");
+const note = document.getElementById("form-note");
+const recipient = "robert.youssefeng@gmail.com";
 
-  if (contactForm) {
-    contactForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const formData = new FormData(contactForm);
-      const name = String(formData.get("name") || "").trim();
-      const email = String(formData.get("email") || "").trim();
+if (contactForm) {
+  contactForm.addEventListener("submit", (event) => {
+    event.preventDefault();
 
-      if (!name || !email) {
-        if (note) note.textContent = "Please add your name and email before submitting.";
-        return;
+    const formData = new FormData(contactForm);
+    const name = String(formData.get("name") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const topic = String(formData.get("topic") || "").trim();
+    const message = String(formData.get("message") || "").trim();
+
+    if (!name || !email || !message) {
+      if (note) {
+        note.textContent = "Please add your name, email, and message before sending.";
       }
+      return;
+    }
 
-      if (note) note.textContent = `Thanks, ${name}. Your message has been recorded locally for this demo.`;
-      contactForm.reset();
-    });
-  }
+    const subject = `AgiNeuro website inquiry${topic ? ` — ${topic}` : ""}`;
+
+    const body = [
+      `Name: ${name}`,
+      `Email: ${email}`,
+      topic ? `Area of interest: ${topic}` : "",
+      "",
+      "Message:",
+      message
+    ].filter(Boolean).join("\n");
+
+    const mailtoUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+    window.location.href = mailtoUrl;
+
+    if (note) {
+      note.textContent = "Opening your email app with the message ready to send.";
+    }
+  });
+}
 
   const revealElements = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window) {
